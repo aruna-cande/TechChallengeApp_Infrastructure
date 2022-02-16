@@ -6,6 +6,10 @@ on:
     - main
   pull_request:
 
+env:
+  if: ${{ github.base_ref == 'main' }}
+  run: ENVIRONMENT=prod
+
 jobs:
   terraform:
     name: 'Terraform'
@@ -24,9 +28,7 @@ jobs:
     
     - name: Set env to production
       if: ${{ github.base_ref == 'main' }}
-      run: |
-       ENVIRONMENT=prod
-       echo $ENVIRONMENT
+      run: echo $ENVIRONMENT
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
