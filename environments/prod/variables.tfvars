@@ -19,7 +19,7 @@ public_subnet_cidr_blocks=[
 //service vars
 service="techchallangeapp"
 image="registry.hub.docker.com/servian/techchallengeapp:latest"
-command=["updatedb", "-s"]
+command=["serve"]
 //rds
 allocated_storage="10"
 db_instance_class="db.t2.micro"
