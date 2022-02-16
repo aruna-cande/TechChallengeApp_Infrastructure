@@ -7,8 +7,7 @@ on:
   pull_request:
 
 env:
-  if: ${{ github.base_ref == 'main' }}
-  run: ENVIRONMENT=prod
+  ENVIRONMENT: ${{ github.base_ref == 'main' && 'prod' || 'stage' }}
 
 jobs:
   terraform:
@@ -25,10 +24,6 @@ jobs:
     # Checkout the repository to the GitHub Actions runner
     - name: Checkout
       uses: actions/checkout@v2
-    
-    - name: Set env to production
-      if: ${{ github.base_ref == 'main' }}
-      run: echo $ENVIRONMENT
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
@@ -48,6 +43,7 @@ jobs:
       run: |
        echo $ENVIRONMENT
        terraform init -backend=true  -backend-config=environments/$ENVIRONMENT/backend.tfvars
+      continue-on-error: false
 
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
