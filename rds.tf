@@ -15,6 +15,7 @@ resource "aws_db_instance" "rds" {
   publicly_accessible         = false
   auto_minor_version_upgrade  = false
   allow_major_version_upgrade = false
+  skip_final_snapshot         = true
   apply_immediately           = true
   parameter_group_name        = aws_db_parameter_group.default.name
 
