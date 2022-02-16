@@ -6,13 +6,11 @@ on:
     - main
   pull_request:
 
-env:
-  ENVIRONMENT: ${{ github.base_ref == 'main' && 'prod' || 'stage' }}
-
 jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
+    environment: production
 
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
@@ -43,7 +41,7 @@ jobs:
       id: init
       run: |
        echo $ENVIRONMENT
-       terraform init -backend=true  -backend-config=environments/$ENVIRONMENT/backend.tfvars
+       terraform init -backend=true  -backend-config=environments/prod/backend.tfvars
       continue-on-error: false
 
     # Checks that all Terraform configuration files adhere to a canonical format
@@ -54,7 +52,7 @@ jobs:
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       id: plan
-      run: terraform plan -out=out.plan -var-file=environments/$ENVIRONMENT/variables.tfvars -no-color
+      run: terraform plan -out=out.plan -var-file=environments/prod/variables.tfvars -no-color
       continue-on-error: true
 
     - uses: actions/github-script@0.9.0
