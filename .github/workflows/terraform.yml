@@ -37,7 +37,7 @@ jobs:
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
-      run: terraform init -backend=true  -backend-config=environments/$environment/backend.tfvars
+      run: terraform init -backend=true  -backend-config=environments/${{ environment }}/backend.tfvars
 
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
@@ -46,7 +46,7 @@ jobs:
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       id: plan
-      run: terraform plan -out=out.plan -var-file=environments/$environment/variables.tfvars -no-color
+      run: terraform plan -out=out.plan -var-file=environments/${{ environment }}/variables.tfvars -no-color
       continue-on-error: true
 
     - uses: actions/github-script@0.9.0
