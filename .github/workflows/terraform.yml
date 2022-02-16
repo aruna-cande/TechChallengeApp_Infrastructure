@@ -6,6 +6,9 @@ on:
     - main
   pull_request:
 
+env:
+  TEST: prod
+
 jobs:
   terraform:
     name: 'Terraform'
@@ -25,7 +28,10 @@ jobs:
     - name: Set env to production
       #if: endsWith(github.ref, '/main')
       run: |
+       echo $GITHUB_REF
        ENVIRONMENT=prod
+       echo $ENVIRONMENT
+       echo $TEST
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
