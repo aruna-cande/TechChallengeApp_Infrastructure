@@ -52,7 +52,7 @@ resource "aws_security_group" "rds" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description     = "Allow all incoming Postgres traffic from ECS and the bastion"
+    description     = "Allow all incoming Postgres traffic from ECS"
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"
@@ -60,7 +60,7 @@ resource "aws_security_group" "rds" {
   }
 
   egress {
-    description     = "Allow all outgoing Postgres traffic to ECS and the bastion"
+    description     = "Allow all outgoing Postgres traffic to ECS"
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"
