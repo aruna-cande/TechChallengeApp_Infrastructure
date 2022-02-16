@@ -6,6 +6,9 @@ on:
     - main
   pull_request:
 
+env:
+  ENVIRONMENT: ${{ github.base_ref == 'main' && 'prod' || 'stage' }}
+
 jobs:
   terraform:
     name: 'Terraform'
@@ -21,11 +24,6 @@ jobs:
     # Checkout the repository to the GitHub Actions runner
     - name: Checkout
       uses: actions/checkout@v2
-    
-    - name: Set env to production
-      #if: endsWith(github.ref, '/main')
-      run: |
-       ENVIRONMENT=prod
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
@@ -42,16 +40,21 @@ jobs:
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
-      run: terraform init -backend=true  -backend-config=environments/prod/backend.tfvars
+      id: init
+      run: |
+       echo $ENVIRONMENT
+       terraform init -backend=true  -backend-config=environments/$ENVIRONMENT/backend.tfvars
+      continue-on-error: false
 
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
+      id: validate
       run: terraform fmt -check
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       id: plan
-      run: terraform plan -out=out.plan -var-file=environments/prod/variables.tfvars -no-color
+      run: terraform plan -out=out.plan -var-file=environments/$ENVIRONMENT/variables.tfvars -no-color
       continue-on-error: true
 
     - uses: actions/github-script@0.9.0
@@ -61,8 +64,7 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-          #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+          const output = `#### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
           #### Terraform Validation 🤖\`${{ steps.validate.outputs.stdout }}\`
           #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
           
